@@ -1,0 +1,198 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background: linear-gradient(135deg, #1e3c72, #0bc2e2);
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .view-subtitles-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .filter-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+  
+  .search-bar {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .search-bar .icon {
+    margin-right: 10px;
+    color: #0bc2e2;
+  }
+  
+  .search-bar input {
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .add-subtitle-button {
+    background-color: #0bc2e2;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+  }
+  
+  .add-subtitle-button:hover {
+    background-color: #1e3c72;
+  }
+  
+  .add-subtitle-button .icon {
+    margin-right: 10px;
+  }
+  
+  .subtitles-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .subtitles-table th,
+  .subtitles-table td {
+    padding: 15px;
+    text-align: left;
+  }
+  
+  .subtitles-table th {
+    background-color: #1e3c72;
+    color: white;
+  }
+  
+  .subtitles-table tbody tr {
+    transition: background-color 0.3s ease;
+  }
+  
+  .subtitles-table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .thumbnail {
+    width: 100px;
+    border-radius: 5px;
+  }
+  
+  .action-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px;
+    margin-right: 10px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .action-button.copy {
+    background-color: #0bc2e2;
+    color: white;
+  }
+  
+  .action-button.copy:hover {
+    background-color: #1e3c72;
+  }
+  
+  .action-button.delete {
+    background-color: #ff4d4d;
+    color: white;
+  }
+  
+  .action-button.delete:hover {
+    background-color: #d11a2a;
+  }
+  
+  .action-button .icon {
+    margin-right: 5px;
+  }
+  
+  .form-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .form-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    font-weight: bold;
+    color: #333;
+    display: block;
+    margin-bottom: 8px;
+  }
+  
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .btn {
+    background-color: #0bc2e2;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    font-weight: bold;
+    display: inline-block;
+    margin-right: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn:hover {
+    background-color: #1e3c72;
+  }
+  
+  .btn-secondary {
+    background-color: #ccc;
+    color: black;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #999;
+  }
+  

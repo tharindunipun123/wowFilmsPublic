@@ -1,0 +1,30 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background: linear-gradient(135deg, #1e3c72, #0bc2e2);
+  }
+  
+  html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+  
+  .login-container {
+    width: 100%;
+    max-width: 800px; /* Increase this value to expand the width */
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Ensure it takes up the full height */
+  }
+  
+  .card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    width: 100%; /* Ensure the card takes up the full width of the container */
+  }
+  
