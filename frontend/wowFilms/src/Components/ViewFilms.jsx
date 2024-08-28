@@ -167,7 +167,7 @@ const ViewFilms = () => {
   useEffect(() => {
     const fetchFilms = async () => {
       try {
-        const response = await fetch('http://localhost:3000/films');
+        const response = await fetch('http://109.199.99.84:3000/films');
         const data = await response.json();
         setFilmsData(data);
       } catch (error) {
@@ -193,7 +193,7 @@ const ViewFilms = () => {
   });
 
   const copyToClipboard = (filmId) => {
-    const downloadUrl = `http://localhost:5173/download/${filmId}`; // Updated to reflect the new route
+    const downloadUrl = `http://109.199.99.84:5173/download/${filmId}`; // Updated to reflect the new route
     navigator.clipboard.writeText(downloadUrl);
     swal({
       title: 'Copied!',
