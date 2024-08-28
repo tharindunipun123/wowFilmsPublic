@@ -10,7 +10,7 @@ const ViewSubtitles = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:3000/subtitles')
+    fetch('http://109.199.99.84:3000/subtitles')
       .then(response => response.json())
       .then(data => setFilms(data))
       .catch(error => console.error('Error fetching subtitles:', error));
@@ -31,7 +31,7 @@ const ViewSubtitles = () => {
     formData.append('selectedFilm', selectedFilm);
     formData.append('subtitleFile', subtitleFile);
 
-    fetch('http://localhost:3000/subtitles', {
+    fetch('http://109.199.99.84:3000/subtitles', {
       method: 'POST',
       body: formData,
     })
@@ -40,7 +40,7 @@ const ViewSubtitles = () => {
         alert(data.message);
         setShowForm(false);
         // Reload subtitles after successful upload
-        fetch('http://localhost:3000/subtitles')
+        fetch('http://109.199.99.84:3000/subtitles')
           .then(response => response.json())
           .then(data => setFilms(data));
       })
@@ -68,7 +68,7 @@ const ViewSubtitles = () => {
     const confirmDelete = window.confirm(`Are you sure you want to delete this subtitle?`);
     if (!confirmDelete) return;
 
-    fetch(`http://localhost:3000/subtitles/${id}`, {
+    fetch(`http://109.199.99.84:3000/subtitles/${id}`, {
       method: 'DELETE',
     })
       .then(response => response.json())
@@ -107,12 +107,12 @@ const ViewSubtitles = () => {
         <tbody>
           {filteredFilms.map((film) => (
             <tr key={film.subtitleId}>
-              <td><img src={`http://localhost:3000/${film.thumbnailUrl}`} alt={film.filmName} className="thumbnail" /></td>
+              <td><img src={`http://109.199.99.84:3000/${film.thumbnailUrl}`} alt={film.filmName} className="thumbnail" /></td>
               <td>{film.filmName}</td>
               <td>
                 <button
                   className="action-button copy"
-                  onClick={() => copyToClipboard(`http://localhost:3000/${film.subtitleUrl}`)}
+                  onClick={() => copyToClipboard(`http://109.199.99.84:3000/${film.subtitleUrl}`)}
                 >
                   <FaCopy /> Copy URL
                 </button>

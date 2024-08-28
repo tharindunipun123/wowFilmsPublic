@@ -29,7 +29,7 @@ const UploadFilms = () => {
     formData.append('subtitleUpload', subtitle);
 
     try {
-      const response = await fetch('http://localhost:3000/upload-film', {
+      const response = await fetch('http://109.199.99.84:3000/upload-film', {
         method: 'POST',
         body: formData,
       });

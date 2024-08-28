@@ -207,7 +207,7 @@ const ViewFilms = () => {
   };
 
   const copyUrlWithoutId = (filmUrl) => {
-    const videoPlayerUrl = `http://localhost:3000/${filmUrl}`;
+    const videoPlayerUrl = `http://109.199.99.84:3000/${filmUrl}`;
     navigator.clipboard.writeText(videoPlayerUrl);
     swal({
       title: 'Copied!',
@@ -231,7 +231,7 @@ const ViewFilms = () => {
     .then(async (willDelete) => {
       if (willDelete) {
         try {
-          const response = await fetch(`http://localhost:3000/films/${id}`, {
+          const response = await fetch(`http://109.199.99.84:3000/films/${id}`, {
             method: 'DELETE',
           });
   
@@ -299,7 +299,7 @@ const ViewFilms = () => {
         <tbody>
           {filteredFilms.map((film) => (
             <tr key={film.f_id}>
-              <td><img src={`http://localhost:3000/${film.thumbnailUrl}`} alt={film.name} className="thumbnail" /></td>
+              <td><img src={`http://109.199.99.84:3000/${film.thumbnailUrl}`} alt={film.name} className="thumbnail" /></td>
               <td>{film.name}</td>
               <td>{film.description}</td>
               <td>{film.quality}</td>
