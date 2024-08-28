@@ -9,6 +9,7 @@ const DownloadPage = () => {
   const { id } = useParams(); // Get the film ID from the URL
   const [film, setFilm] = useState(null);
   const [error, setError] = useState(null);
+  //localhost
 
   useEffect(() => {
     const fetchFilm = async () => {

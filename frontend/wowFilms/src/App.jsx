@@ -13,7 +13,7 @@ import DownloadPage from './Components/DownloadPage';
 function App() {
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/wow">
     <Routes>
     <Route path="/" element={<Login/>}> </Route>
     <Route path="/home" element={<HomePage/>}> </Route>
