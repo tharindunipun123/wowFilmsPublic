@@ -192,33 +192,103 @@ const ViewFilms = () => {
     return matchesSearch && matchesQuality;
   });
 
-  const copyToClipboard = (filmId) => {
-    const downloadUrl = `http://109.199.99.84:5173/download/${filmId}`; // Updated to reflect the new route
-    navigator.clipboard.writeText(downloadUrl);
-    swal({
-      title: 'Copied!',
-      text: 'Film Download URL copied to clipboard!',
-      icon: 'success',
-      button: 'Done',
-    }).then(() => {
+  // const copyToClipboard = (filmId) => {
+  //   const downloadUrl = `http://109.199.99.84:5173/download/${filmId}`; // Updated to reflect the new route
+  //   navigator.clipboard.writeText(downloadUrl);
+  //   swal({
+  //     title: 'Copied!',
+  //     text: 'Film Download URL copied to clipboard!',
+  //     icon: 'success',
+  //     button: 'Done',
+  //   }).then(() => {
       
-    });
-    // alert('Film Download URL copied to clipboard!');
-  };
+  //   });
+  //   // alert('Film Download URL copied to clipboard!');
+  // };
 
-  const copyUrlWithoutId = (filmUrl) => {
-    const videoPlayerUrl = `http://109.199.99.84:3000/${filmUrl}`;
-    navigator.clipboard.writeText(videoPlayerUrl);
-    swal({
-      title: 'Copied!',
-      text: 'Film Vieo URL copied to clipboard!',
-      icon: 'success',
-      button: 'Done',
-    }).then(() => {
+  // const copyUrlWithoutId = (filmUrl) => {
+  //   const videoPlayerUrl = `http://109.199.99.84:3000/${filmUrl}`;
+  //   navigator.clipboard.writeText(videoPlayerUrl);
+  //   swal({
+  //     title: 'Copied!',
+  //     text: 'Film Vieo URL copied to clipboard!',
+  //     icon: 'success',
+  //     button: 'Done',
+  //   }).then(() => {
       
+  //   });
+  //    alert('Video Player URL copied to clipboard!');
+  // };
+
+
+  const copyToClipboard = (filmId) => {
+  const downloadUrl = `http://109.199.99.84:5173/download/${filmId}`;
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(downloadUrl)
+      .then(() => {
+        swal({
+          title: 'Copied!',
+          text: 'Film Download URL copied to clipboard!',
+          icon: 'success',
+          button: 'Done',
+        });
+      })
+      .catch((error) => {
+        console.error('Error copying text to clipboard:', error);
+        swal({
+          title: 'Error',
+          text: 'Failed to copy text to clipboard!',
+          icon: 'error',
+          button: 'Try again!',
+        });
+      });
+  } else {
+    console.warn('Clipboard API not supported.');
+    swal({
+      title: 'Error',
+      text: 'Clipboard API not supported!',
+      icon: 'error',
+      button: 'OK',
     });
-    // alert('Video Player URL copied to clipboard!');
-  };
+  }
+};
+
+
+const copyUrlWithoutId = (filmUrl) => {
+  const videoPlayerUrl = `http://109.199.99.84:3000/${filmUrl}`;
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(videoPlayerUrl)
+      .then(() => {
+        swal({
+          title: 'Copied!',
+          text: 'Film Video URL copied to clipboard!',
+          icon: 'success',
+          button: 'Done',
+        });
+      })
+      .catch((error) => {
+        console.error('Error copying text to clipboard:', error);
+        swal({
+          title: 'Error',
+          text: 'Failed to copy text to clipboard!',
+          icon: 'error',
+          button: 'Try again!',
+        });
+      });
+  } else {
+    console.warn('Clipboard API not supported.');
+    swal({
+      title: 'Error',
+      text: 'Clipboard API not supported!',
+      icon: 'error',
+      button: 'OK',
+    });
+  }
+};
+
+
 
   const deleteFilm = async (id) => {
     swal({
