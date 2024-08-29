@@ -221,72 +221,93 @@ const ViewFilms = () => {
   // };
 
 
+  const copyToClipboardFallback = (text) => {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';  // avoid scrolling to bottom in mobile devices
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+  
+    try {
+      const successful = document.execCommand('copy');
+      const msg = successful ? 'successful' : 'unsuccessful';
+      console.log('Fallback: Copying text command was ' + msg);
+      swal({
+        title: 'Copied!',
+        text: 'URL copied to clipboard!',
+        icon: 'success',
+        button: 'Done',
+      });
+    } catch (err) {
+      console.error('Fallback: Oops, unable to copy', err);
+      swal({
+        title: 'Error',
+        text: 'Failed to copy text to clipboard!',
+        icon: 'error',
+        button: 'Try again!',
+      });
+    }
+  
+    document.body.removeChild(textArea);
+  };
+  
   const copyToClipboard = (filmId) => {
-  const downloadUrl = `http://109.199.99.84:5173/download/${filmId}`;
-
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(downloadUrl)
-      .then(() => {
-        swal({
-          title: 'Copied!',
-          text: 'Film Download URL copied to clipboard!',
-          icon: 'success',
-          button: 'Done',
+    const downloadUrl = `http://109.199.99.84/wow/download/${filmId}`;
+  
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(downloadUrl)
+        .then(() => {
+          swal({
+            title: 'Copied!',
+            text: 'Film Download URL copied to clipboard!',
+            icon: 'success',
+            button: 'Done',
+          });
+        })
+        .catch((error) => {
+          console.error('Error copying text to clipboard:', error);
+          swal({
+            title: 'Error',
+            text: 'Failed to copy text to clipboard!',
+            icon: 'error',
+            button: 'Try again!',
+          });
         });
-      })
-      .catch((error) => {
-        console.error('Error copying text to clipboard:', error);
-        swal({
-          title: 'Error',
-          text: 'Failed to copy text to clipboard!',
-          icon: 'error',
-          button: 'Try again!',
+    } else {
+      console.warn('Clipboard API not supported. Falling back to older method.');
+      copyToClipboardFallback(downloadUrl);
+    }
+  };
+  
+  const copyUrlWithoutId = (filmUrl) => {
+    const videoPlayerUrl = `http://109.199.99.84:3000/${filmUrl}`;
+  
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(videoPlayerUrl)
+        .then(() => {
+          swal({
+            title: 'Copied!',
+            text: 'Film Video URL copied to clipboard!',
+            icon: 'success',
+            button: 'Done',
+          });
+        })
+        .catch((error) => {
+          console.error('Error copying text to clipboard:', error);
+          swal({
+            title: 'Error',
+            text: 'Failed to copy text to clipboard!',
+            icon: 'error',
+            button: 'Try again!',
+          });
         });
-      });
-  } else {
-    console.warn('Clipboard API not supported.');
-    swal({
-      title: 'Error',
-      text: 'Clipboard API not supported!',
-      icon: 'error',
-      button: 'OK',
-    });
-  }
-};
-
-
-const copyUrlWithoutId = (filmUrl) => {
-  const videoPlayerUrl = `http://109.199.99.84:3000/${filmUrl}`;
-
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(videoPlayerUrl)
-      .then(() => {
-        swal({
-          title: 'Copied!',
-          text: 'Film Video URL copied to clipboard!',
-          icon: 'success',
-          button: 'Done',
-        });
-      })
-      .catch((error) => {
-        console.error('Error copying text to clipboard:', error);
-        swal({
-          title: 'Error',
-          text: 'Failed to copy text to clipboard!',
-          icon: 'error',
-          button: 'Try again!',
-        });
-      });
-  } else {
-    console.warn('Clipboard API not supported.');
-    swal({
-      title: 'Error',
-      text: 'Clipboard API not supported!',
-      icon: 'error',
-      button: 'OK',
-    });
-  }
-};
+    } else {
+      console.warn('Clipboard API not supported. Falling back to older method.');
+      copyToClipboardFallback(videoPlayerUrl);
+    }
+  };
+  
 
 
 

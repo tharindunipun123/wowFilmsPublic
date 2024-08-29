@@ -51,18 +51,63 @@ const ViewSubtitles = () => {
     film.filmName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const copyToClipboard = (url) => {
-    navigator.clipboard.writeText(url);
-    swal({
-      title: 'Copied!',
-      text: 'Subtitle Download URL copied to clipboard!',
-      icon: 'success',
-      button: 'Done',
-    }).then(() => {
-      
-    });
-    //alert('Subtitle URL copied to clipboard!');
+  const copyToClipboardFallback = (text) => {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';  // avoid scrolling to bottom in mobile devices
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+  
+    try {
+      const successful = document.execCommand('copy');
+      const msg = successful ? 'successful' : 'unsuccessful';
+      console.log('Fallback: Copying text command was ' + msg);
+      swal({
+        title: 'Copied!',
+        text: 'Subtitle Download URL copied to clipboard!',
+        icon: 'success',
+        button: 'Done',
+      });
+    } catch (err) {
+      console.error('Fallback: Oops, unable to copy', err);
+      swal({
+        title: 'Error',
+        text: 'Failed to copy text to clipboard!',
+        icon: 'error',
+        button: 'Try again!',
+      });
+    }
+  
+    document.body.removeChild(textArea);
   };
+  
+  const copyToClipboard = (url) => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url)
+        .then(() => {
+          swal({
+            title: 'Copied!',
+            text: 'Subtitle Download URL copied to clipboard!',
+            icon: 'success',
+            button: 'Done',
+          });
+        })
+        .catch((error) => {
+          console.error('Error copying text to clipboard:', error);
+          swal({
+            title: 'Error',
+            text: 'Failed to copy text to clipboard!',
+            icon: 'error',
+            button: 'Try again!',
+          });
+        });
+    } else {
+      // Fallback for browsers that do not support the Clipboard API
+      copyToClipboardFallback(url);
+    }
+  };
+  
 
   const deleteSubtitle = (id) => {
     const confirmDelete = window.confirm(`Are you sure you want to delete this subtitle?`);
