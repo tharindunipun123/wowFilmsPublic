@@ -7,52 +7,52 @@ const fs = require('fs');
 const cors = require('cors');
 const port = 3000;
 
-
 app.use(express.json());
-
 app.use(cors());
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve files publicly
 
-const db = mysql.createConnection({
+// Use a connection pool to handle MySQL connections efficiently
+const pool = mysql.createPool({
   host: 'localhost',
-  user: 'root', 
-  password: '', 
-  database: 'wowfilms' 
+  user: 'root',
+  password: '',
+  database: 'wowfilms',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-
-db.connect((err) => {
+// Handle database connection errors
+pool.getConnection((err, connection) => {
   if (err) {
     console.error('Error connecting to the database:', err);
   } else {
     console.log('Connected to the MySQL database.');
+    connection.release();
   }
 });
 
-
+// Handle login requests
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
   const query = 'SELECT * FROM usertable WHERE username = ? AND password = ?';
-  db.query(query, [username, password], (err, results) => {
+  pool.query(query, [username, password], (err, results) => {
     if (err) {
       console.error('Error executing query:', err);
       return res.status(500).json({ message: 'Internal server error' });
     }
 
     if (results.length > 0) {
-    
       res.json({ message: 'Login successful', userId: results[0].userId });
     } else {
-      
       res.status(401).json({ message: 'Invalid username or password' });
     }
   });
 });
 
-
-// configuration for file uploads
+// Configuration for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadFolder = {
@@ -61,7 +61,6 @@ const storage = multer.diskStorage({
       subtitleUpload: 'uploads/subtitles/',
     }[file.fieldname];
 
-   
     if (!fs.existsSync(uploadFolder)) {
       fs.mkdirSync(uploadFolder, { recursive: true });
     }
@@ -69,13 +68,11 @@ const storage = multer.diskStorage({
     cb(null, uploadFolder);
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); 
+    cb(null, Date.now() + path.extname(file.originalname));
   }
 });
 
-
 const upload = multer({ storage });
-
 
 app.post('/upload-film', upload.fields([
   { name: 'thumbnailUpload', maxCount: 1 },
@@ -87,12 +84,11 @@ app.post('/upload-film', upload.fields([
   const filmUrl = req.files['videoUpload'][0].path;
   const subtitleUrl = req.files['subtitleUpload'][0].path;
 
-  
   const insertFilmQuery = `
     INSERT INTO filmtable (name, description, thumbnailUrl, filmUrl, quality)
     VALUES (?, ?, ?, ?, ?)
   `;
-  db.query(insertFilmQuery, [filmName, description, thumbnailUrl, filmUrl, qualitySelect], (err, result) => {
+  pool.query(insertFilmQuery, [filmName, description, thumbnailUrl, filmUrl, qualitySelect], (err, result) => {
     if (err) {
       console.error('Error inserting film data:', err);
       return res.status(500).json({ message: 'Error inserting film data' });
@@ -104,7 +100,7 @@ app.post('/upload-film', upload.fields([
       INSERT INTO subtittletable (name, fileUrl, filmId)
       VALUES (?, ?, ?)
     `;
-    db.query(insertSubtitleQuery, [filmName, subtitleUrl, filmId], (err, result) => {
+    pool.query(insertSubtitleQuery, [filmName, subtitleUrl, filmId], (err, result) => {
       if (err) {
         console.error('Error inserting subtitle data:', err);
         return res.status(500).json({ message: 'Error inserting subtitle data' });
@@ -114,8 +110,6 @@ app.post('/upload-film', upload.fields([
     });
   });
 });
-
-
 
 const deleteFile = (filePath) => {
   if (fs.existsSync(filePath)) {
@@ -127,10 +121,8 @@ const deleteFile = (filePath) => {
   }
 };
 
-
 app.delete('/films/:id', (req, res) => {
   const filmId = req.params.id;
-
 
   const selectQuery = `
     SELECT filmtable.filmUrl, filmtable.thumbnailUrl, subtittletable.fileUrl
@@ -138,7 +130,7 @@ app.delete('/films/:id', (req, res) => {
     LEFT JOIN subtittletable ON filmtable.f_id = subtittletable.filmId
     WHERE filmtable.f_id = ?
   `;
-  db.query(selectQuery, [filmId], (err, results) => {
+  pool.query(selectQuery, [filmId], (err, results) => {
     if (err) {
       console.error('Error fetching file paths:', err);
       return res.status(500).json({ message: 'Error fetching file paths' });
@@ -151,17 +143,15 @@ app.delete('/films/:id', (req, res) => {
         deleteFile(result.fileUrl);
       });
 
-     
       const deleteSubtitleQuery = `DELETE FROM subtittletable WHERE filmId = ?`;
-      db.query(deleteSubtitleQuery, [filmId], (err) => {
+      pool.query(deleteSubtitleQuery, [filmId], (err) => {
         if (err) {
           console.error('Error deleting subtitle records:', err);
           return res.status(500).json({ message: 'Error deleting subtitle records' });
         }
 
-        
         const deleteFilmQuery = `DELETE FROM filmtable WHERE f_id = ?`;
-        db.query(deleteFilmQuery, [filmId], (err) => {
+        pool.query(deleteFilmQuery, [filmId], (err) => {
           if (err) {
             console.error('Error deleting film record:', err);
             return res.status(500).json({ message: 'Error deleting film record' });
@@ -180,7 +170,7 @@ app.get('/films/:id', (req, res) => {
   const filmId = req.params.id;
 
   const selectQuery = 'SELECT * FROM filmtable WHERE f_id = ?';
-  db.query(selectQuery, [filmId], (err, results) => {
+  pool.query(selectQuery, [filmId], (err, results) => {
     if (err) {
       console.error('Error fetching film:', err);
       return res.status(500).json({ message: 'Error fetching film' });
@@ -194,11 +184,10 @@ app.get('/films/:id', (req, res) => {
   });
 });
 
-
 app.get('/films', (req, res) => {
   const query = 'SELECT * FROM filmtable';
 
-  db.query(query, (err, results) => {
+  pool.query(query, (err, results) => {
     if (err) {
       console.error('Error fetching films:', err);
       return res.status(500).json({ message: 'Error fetching films' });
@@ -208,11 +197,9 @@ app.get('/films', (req, res) => {
   });
 });
 
-
-
-////////////////////////////////////////////////////////////////////////sub titile page////////////////////////////////////////////////////////////////////////////////
-
-
+////////////////////////////////////////////////////////////////////////
+// Subtitle Management
+////////////////////////////////////////////////////////////////////////
 
 app.get('/subtitles', (req, res) => {
   const query = `
@@ -222,7 +209,7 @@ app.get('/subtitles', (req, res) => {
     JOIN filmtable ON subtittletable.filmId = filmtable.f_id
   `;
 
-  db.query(query, (err, results) => {
+  pool.query(query, (err, results) => {
     if (err) {
       console.error('Error fetching subtitles:', err);
       return res.status(500).json({ message: 'Error fetching subtitles' });
@@ -232,28 +219,27 @@ app.get('/subtitles', (req, res) => {
   });
 });
 
-
-const subtitleUpload = multer({ storage: multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadFolder = 'uploads/subtitles/';
-    if (!fs.existsSync(uploadFolder)) {
-      fs.mkdirSync(uploadFolder, { recursive: true });
+const subtitleUpload = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      const uploadFolder = 'uploads/subtitles/';
+      if (!fs.existsSync(uploadFolder)) {
+        fs.mkdirSync(uploadFolder, { recursive: true });
+      }
+      cb(null, uploadFolder);
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now() + path.extname(file.originalname));
     }
-    cb(null, uploadFolder);
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
-})});
-
-
+  })
+});
 
 app.post('/subtitles', subtitleUpload.single('subtitleFile'), (req, res) => {
   const { selectedFilm } = req.body;
   const subtitleUrl = req.file.path;
 
   const getFilmIdQuery = 'SELECT f_id FROM filmtable WHERE name = ?';
-  db.query(getFilmIdQuery, [selectedFilm], (err, filmResults) => {
+  pool.query(getFilmIdQuery, [selectedFilm], (err, filmResults) => {
     if (err) {
       console.error('Error fetching film ID:', err);
       return res.status(500).json({ message: 'Error fetching film ID' });
@@ -266,7 +252,7 @@ app.post('/subtitles', subtitleUpload.single('subtitleFile'), (req, res) => {
         INSERT INTO subtittletable (name, fileUrl, filmId)
         VALUES (?, ?, ?)
       `;
-      db.query(insertSubtitleQuery, [selectedFilm, subtitleUrl, filmId], (err, result) => {
+      pool.query(insertSubtitleQuery, [selectedFilm, subtitleUrl, filmId], (err, result) => {
         if (err) {
           console.error('Error inserting subtitle data:', err);
           return res.status(500).json({ message: 'Error inserting subtitle data' });
@@ -280,13 +266,11 @@ app.post('/subtitles', subtitleUpload.single('subtitleFile'), (req, res) => {
   });
 });
 
-
-
 app.delete('/subtitles/:id', (req, res) => {
   const subtitleId = req.params.id;
 
   const getSubtitleQuery = 'SELECT fileUrl FROM subtittletable WHERE s_id = ?';
-  db.query(getSubtitleQuery, [subtitleId], (err, results) => {
+  pool.query(getSubtitleQuery, [subtitleId], (err, results) => {
     if (err) {
       console.error('Error fetching subtitle file path:', err);
       return res.status(500).json({ message: 'Error fetching subtitle file path' });
@@ -295,11 +279,10 @@ app.delete('/subtitles/:id', (req, res) => {
     if (results.length > 0) {
       const filePath = results[0].fileUrl;
 
-      
       deleteFile(filePath);
 
       const deleteSubtitleQuery = 'DELETE FROM subtittletable WHERE s_id = ?';
-      db.query(deleteSubtitleQuery, [subtitleId], (err) => {
+      pool.query(deleteSubtitleQuery, [subtitleId], (err) => {
         if (err) {
           console.error('Error deleting subtitle record:', err);
           return res.status(500).json({ message: 'Error deleting subtitle record' });
@@ -313,14 +296,11 @@ app.delete('/subtitles/:id', (req, res) => {
   });
 });
 
-
-
 app.get('/download/:id', (req, res) => {
   const filmId = req.params.id;
 
-  
   const selectQuery = 'SELECT filmUrl, name FROM filmtable WHERE f_id = ?';
-  db.query(selectQuery, [filmId], (err, results) => {
+  pool.query(selectQuery, [filmId], (err, results) => {
     if (err) {
       console.error('Error fetching film:', err);
       return res.status(500).json({ message: 'Error fetching film' });
@@ -330,7 +310,6 @@ app.get('/download/:id', (req, res) => {
       const filmPath = path.join(__dirname, results[0].filmUrl);
       const filmName = results[0].name;
 
-      
       res.download(filmPath, `${filmName}.mp4`, (err) => {
         if (err) {
           console.error('Error downloading file:', err);
@@ -343,8 +322,6 @@ app.get('/download/:id', (req, res) => {
   });
 });
 
-
-
-app.listen(port,'0.0.0.0', () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`Server running at http://localhost:${port}`);
 });
