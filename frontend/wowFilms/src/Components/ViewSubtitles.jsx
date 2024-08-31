@@ -157,7 +157,7 @@ const ViewSubtitles = () => {
               <td>
                 <button
                   className="action-button copy"
-                  onClick={() => copyToClipboard(`http://109.199.99.84:3000/${film.subtitleUrl}`)}
+                  onClick={() => copyToClipboard(`http://woowfilms.homes:3000/${film.subtitleUrl}`)}
                 >
                   <FaCopy /> Copy URL
                 </button>

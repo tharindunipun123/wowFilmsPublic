@@ -253,7 +253,7 @@ const ViewFilms = () => {
   };
   
   const copyToClipboard = (filmId) => {
-    const downloadUrl = `http://109.199.99.84/wow/download/${filmId}`;
+    const downloadUrl = `http://woowfilms.homes/wow/download/${filmId}`;
   
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(downloadUrl)
@@ -281,7 +281,7 @@ const ViewFilms = () => {
   };
   
   const copyUrlWithoutId = (filmUrl) => {
-    const videoPlayerUrl = `http://109.199.99.84:3000/${filmUrl}`;
+    const videoPlayerUrl = `http://woowfilms.homes:3000/${filmUrl}`;
   
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(videoPlayerUrl)
